@@ -1,182 +1,102 @@
 import numpy as np
-import matplotlib.pyplot as plt
 
-class SimpleLoanFIS:
-    def __init__(self):
-        # Define membership function parameters
-        # All ranges: 0-100 (scaled)
-        self.income_params = {'Low': (0, 0, 40), 'Medium': (30, 50, 70), 'High': (60, 100, 100)}
-        self.credit_params = {'Low': (0, 0, 40), 'Medium': (30, 50, 70), 'High': (60, 100, 100)}
-        self.stability_params = {'Low': (0, 0, 40), 'Medium': (30, 50, 70), 'High': (60, 100, 100)}
-        
-        # Rules: (Income, Credit, Stability) -> Approval
-        self.rules = [
-            ('High', 'High', 'High', 'High'),
-            ('High', 'High', 'Medium', 'High'),
-            ('High', 'Medium', 'High', 'High'),
-            ('Medium', 'High', 'High', 'High'),
-            ('Medium', 'Medium', 'Medium', 'Medium'),
-            ('Medium', 'Low', 'Medium', 'Low'),
-            ('Low', 'Medium', 'Medium', 'Low'),
-            ('Low', 'Low', 'Low', 'Low'),
-            ('Low', 'Medium', 'High', 'Medium'),
-            ('Medium', 'High', 'Medium', 'Medium')
-        ]
-        
-        # Sugeno coefficients for each output class
-        self.sugeno_coeff = {'Low': 20, 'Medium': 50, 'High': 80}
+# ========== MEMBERSHIP FUNCTIONS ==========
+def triangular_mf(x, a, b, c):
+    if x <= a or x >= c: return 0
+    elif a < x <= b: return (x - a) / (b - a)
+    else: return (c - x) / (c - b)
 
-    def triangular_mf(self, x, a, b, c):
-        """Triangular membership function"""
-        if x <= a or x >= c:
-            return 0
-        elif a < x <= b:
-            return (x - a) / (b - a)
-        elif b < x < c:
-            return (c - x) / (c - b)
-        return 0
+def fuzzify_income(income):
+    # Income in $1000s per year (realistic: 0-200k)
+    params = {'Low': (0,0,50), 'Medium': (30,75,120), 'High': (80,150,200)}
+    return {term: triangular_mf(income, a, b, c) for term, (a,b,c) in params.items()}
 
-    def fuzzify(self, value, params):
-        """Convert crisp value to fuzzy membership degrees"""
-        degrees = {}
-        for term, (a, b, c) in params.items():
-            degrees[term] = self.triangular_mf(value, a, b, c)
-        return degrees
+def fuzzify_credit(score):
+    # Credit score (realistic: 300-850)
+    params = {'Low': (300,300,580), 'Medium': (500,650,750), 'High': (680,780,850)}
+    return {term: triangular_mf(score, a, b, c) for term, (a,b,c) in params.items()}
 
-    def evaluate_rules(self, income_fuzzy, credit_fuzzy, stability_fuzzy):
-        """Evaluate all rules using min operator for AND"""
-        rule_strengths = []
-        
-        for inc, cred, stab, output in self.rules:
-            # Strength = min of antecedents
-            strength = min(income_fuzzy[inc], credit_fuzzy[cred], stability_fuzzy[stab])
-            if strength > 0:
-                rule_strengths.append((output, strength))
-        
-        return rule_strengths
+def fuzzify_stability(years):
+    # Employment years (realistic: 0-40 years)
+    params = {'Low': (0,0,2), 'Medium': (1,5,15), 'High': (8,20,40)}
+    return {term: triangular_mf(years, a, b, c) for term, (a,b,c) in params.items()}
 
-    # ========== MAMDANI METHOD ==========
-    def mamdani_aggregate(self, rule_strengths):
-        """Aggregate rules using max operator"""
-        # Simplified: just return weighted average of output strengths
-        output_sum = 0
-        strength_sum = 0
-        
-        for output, strength in rule_strengths:
-            if output == 'Low':
-                output_sum += strength * 25
-            elif output == 'Medium':
-                output_sum += strength * 50
-            else:  # High
-                output_sum += strength * 75
-            strength_sum += strength
-        
-        if strength_sum == 0:
-            return 0
-        
-        # Defuzzify using centroid approximation
-        return output_sum / strength_sum
-
-    # ========== SUGENO METHOD ==========
-    def sugeno_compute(self, rule_strengths):
-        """Sugeno weighted average"""
-        numerator = 0
-        denominator = 0
-        
-        for output, strength in rule_strengths:
-            numerator += strength * self.sugeno_coeff[output]
-            denominator += strength
-        
-        if denominator == 0:
-            return 0
-        
-        return numerator / denominator
-
-    def evaluate_loan(self, income, credit, stability, method='both'):
-        """Main evaluation function"""
-        # Scale inputs to 0-100 if needed
-        income = min(income, 100)
-        credit = min(credit, 100)
-        stability = min(stability, 100)
-        
-        # Fuzzification
-        inc_fuzzy = self.fuzzify(income, self.income_params)
-        cred_fuzzy = self.fuzzify(credit, self.credit_params)
-        stab_fuzzy = self.fuzzify(stability, self.stability_params)
-        
-        # Rule evaluation
-        rule_strengths = self.evaluate_rules(inc_fuzzy, cred_fuzzy, stab_fuzzy)
-        
-        results = {}
-        if method in ['mamdani', 'both']:
-            results['mamdani'] = self.mamdani_aggregate(rule_strengths)
-        if method in ['sugeno', 'both']:
-            results['sugeno'] = self.sugeno_compute(rule_strengths)
-        
-        return results
-
-    def interpret_result(self, value):
-        """Convert numerical result to linguistic interpretation"""
-        if value < 30:
-            return "LOW (Reject)"
-        elif value < 60:
-            return "MEDIUM (Consider with conditions)"
-        else:
-            return "HIGH (Approve)"
-
-# ========== DEMONSTRATION ==========
-def demonstrate():
-    fis = SimpleLoanFIS()
-    
-    # Test cases
-    test_cases = [
-        {"name": "Excellent Applicant", "income": 90, "credit": 85, "stability": 95},
-        {"name": "Average Applicant", "income": 55, "credit": 60, "stability": 50},
-        {"name": "Poor Applicant", "income": 30, "credit": 25, "stability": 20},
-        {"name": "Mixed Applicant", "income": 80, "credit": 40, "stability": 70},
+# ========== RULE EVALUATION ==========
+def evaluate_rules(inc_f, cred_f, stab_f):
+    rules = [
+        ('High','High','High','High'), ('High','High','Medium','High'),
+        ('High','Medium','High','High'), ('Medium','High','High','High'),
+        ('Medium','Medium','Medium','Medium'), ('Medium','Low','Medium','Low'),
+        ('Low','Medium','Medium','Low'), ('Low','Low','Low','Low'),
+        ('Low','Medium','High','Medium'), ('Medium','High','Medium','Medium')
     ]
     
-    print("=" * 60)
-    print("FUZZY LOAN APPROVAL SYSTEM")
-    print("=" * 60)
-    
-    for case in test_cases:
-        print(f"\n{case['name']}:")
-        print(f"  Income: {case['income']}, Credit: {case['credit']}, Stability: {case['stability']}")
-        
-        results = fis.evaluate_loan(case['income'], case['credit'], case['stability'])
-        
-        if 'mamdani' in results:
-            m_val = results['mamdani']
-            print(f"  Mamdani: {m_val:.1f} - {fis.interpret_result(m_val)}")
-        
-        if 'sugeno' in results:
-            s_val = results['sugeno']
-            print(f"  Sugeno:  {s_val:.1f} - {fis.interpret_result(s_val)}")
-        
-        if 'mamdani' in results and 'sugeno' in results:
-            diff = abs(results['mamdani'] - results['sugeno'])
-            print(f"  Difference: {diff:.1f} points")
+    strengths = []
+    for inc, cred, stab, out in rules:
+        strength = min(inc_f[inc], cred_f[cred], stab_f[stab])
+        if strength > 0:
+            strengths.append((out, strength))
+    return strengths
 
-    # Show membership functions
-    print("\n" + "=" * 60)
-    print("MEMBERSHIP FUNCTIONS VISUALIZATION")
-    print("=" * 60)
+# ========== MAMDANI ==========
+def mamdani(strengths):
+    if not strengths: return 0
+    out_vals = {'Low':25, 'Medium':60, 'High':90}
+    num = sum(s * out_vals[out] for out, s in strengths)
+    den = sum(s for _, s in strengths)
+    return num/den if den else 0
+
+# ========== SUGENO ==========
+def sugeno(strengths):
+    if not strengths: return 0
+    coeff = {'Low':30, 'Medium':65, 'High':95}
+    num = sum(s * coeff[out] for out, s in strengths)
+    den = sum(s for _, s in strengths)
+    return num/den if den else 0
+
+# ========== INTERPRET ==========
+def interpret(val):
+    if val >= 75: return "APPROVED"
+    elif val >= 45: return "CONDITIONAL"
+    else: return "REJECTED"
+
+# ========== MAIN ==========
+def evaluate_loan(income, credit, stability):
+    inc_f = fuzzify_income(income)
+    cred_f = fuzzify_credit(credit)
+    stab_f = fuzzify_stability(stability)
     
-    x = np.linspace(0, 100, 200)
-    plt.figure(figsize=(10, 6))
+    strengths = evaluate_rules(inc_f, cred_f, stab_f)
+    m = mamdani(strengths)
+    s = sugeno(strengths)
     
-    # Plot membership functions for one variable (same for all)
-    for term, (a, b, c) in fis.income_params.items():
-        y = [fis.triangular_mf(xi, a, b, c) for xi in x]
-        plt.plot(x, y, label=f'{term} Income')
+    return m, s, interpret((m+s)/2)
+
+# ========== TEST WITH REALISTIC DATA ==========
+def main():
+    # Realistic loan applicants
+    tests = [
+        ["Software Engineer (Senior)", 145, 780, 8],
+        ["Teacher (Entry)", 42, 650, 1.5],
+        ["Restaurant Worker", 28, 580, 0.5],
+        ["Doctor", 180, 820, 12],
+        ["Recent Graduate", 55, 710, 0.2],
+        ["Small Business Owner", 95, 690, 7],
+        ["Construction Worker", 48, 600, 3],
+        ["Retired", 60, 750, 0],  # 0 years stability counts as Low
+        ["Freelancer (Irregular)", 65, 720, 2],
+        ["Bank Manager", 120, 800, 15]
+    ]
     
-    plt.xlabel('Input Value')
-    plt.ylabel('Membership Degree')
-    plt.title('Fuzzy Membership Functions')
-    plt.legend()
-    plt.grid(True, alpha=0.3)
-    plt.show()
+    print("\n" + "="*70)
+    print("REALISTIC FUZZY LOAN APPROVAL SYSTEM")
+    print("="*70)
+    print(f"{'Applicant':<25} {'Income':<8} {'Credit':<8} {'Years':<6} {'Mamdani':<8} {'Sugeno':<8} {'Decision':<10}")
+    print("-"*70)
+    
+    for name, inc, cred, stab in tests:
+        m, s, dec = evaluate_loan(inc, cred, stab)
+        print(f"{name[:24]:<25} ${inc:<7} {cred:<7} {stab:<6} {m:<8.1f} {s:<8.1f} {dec:<10}")
 
 if __name__ == "__main__":
-    demonstrate()
+    main()
