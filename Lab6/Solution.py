@@ -147,7 +147,7 @@ gd_losses, gd_accuracies, gd_updates, W_gd, b_gd, gd_weights, gd_boundaries = tr
 bgd_losses, bgd_accuracies, bgd_updates, W_bgd, b_bgd, bgd_weights, bgd_boundaries = train_perceptron('bgd', X, y, learning_rate, epochs, batch_size=32)
 sgd_losses, sgd_accuracies, sgd_updates, W_sgd, b_sgd, sgd_weights, sgd_boundaries = train_perceptron('sgd', X, y, learning_rate, epochs)
 
-# ==================== VISUALIZATION 1: Perceptron Architecture ====================
+# ======== VISUALIZATION 1: Perceptron Architecture ========
 
 fig = plt.figure(figsize=(20, 14))
 
@@ -207,7 +207,7 @@ ax2.text(0.1, 0.95, perceptron_eq, transform=ax2.transAxes,
 ax2.set_title('Perceptron Mathematical Model', fontsize=12, fontweight='bold')
 
 
-# ==================== VISUALIZATION 2: Training Dynamics ====================
+# ======= VISUALIZATION 2: Training Dynamics ======
 # 2.1 Loss Curves
 plt.subplot(3, 3, 3)
 plt.plot(gd_losses, label='GD', linewidth=2, alpha=0.8)
@@ -292,8 +292,7 @@ ax11.set_title('Weight Evolution (SGD)')
 ax11.legend()
 ax11.grid(True, alpha=0.3)
 
-# ==================== VISUALIZATION 6: Loss Landscape ====================
-fig4 = plt.figure(figsize=(15, 5))
+# ======= VISUALIZATION 6: Loss Landscape ======
 
 # 6.1 3D Loss Landscape
 ax1 = fig4.add_subplot(131, projection='3d')
@@ -351,7 +350,7 @@ plt.suptitle('Perceptron - Loss Landscape and Hyperparameter Analysis', fontsize
 plt.tight_layout()
 plt.show()
 
-# ==================== VISUALIZATION 7: Gradient Analysis ====================
+# =========== VISUALIZATION 7: Gradient Analysis ======
 fig5, axes = plt.subplots(2, 2, figsize=(15, 10))
 
 # Gradient magnitudes during training
@@ -407,7 +406,7 @@ axes[1, 0].legend()
 axes[1, 0].grid(True, alpha=0.3)
 
 
-# ==================== VISUALIZATION 8: Training Progression ====================
+# ========== VISUALIZATION 8: Training Progression ======
 fig6, axes6 = plt.subplots(1, 3, figsize=(15, 5))
 
 # Plot training progression with checkpoints
