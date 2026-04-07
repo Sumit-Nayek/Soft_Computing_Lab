@@ -1,0 +1,4 @@
+An energy company wants to invest in a renewable energy project such as solar, wind, hydro, or biomass. Each alternative has advantages and limitations in terms of cost, efficiency, environmental
+impact, and reliability. Some criteria are measurable, while others depend on expert opinion. Uncertainty in weather patterns and future returns makes decision-making complex. Decision-makers
+need a structured approach to evaluate these alternatives. MCDM techniques provide a systematic framework for such analysis. Therefore, perform a comparative study using AHP, Fuzzy AHP, TOPSIS,
+and Fuzzy TOPSIS to identify the best renewable energy source.
