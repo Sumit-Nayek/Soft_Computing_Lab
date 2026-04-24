@@ -1,0 +1,3 @@
+a) Implement a simple CNN for the given image classification.
+b) Write a program to optimize a function f(x) = ∑ xid 2i using Differential Evolution and make a comparative study with Genetic Algorithm and Simulated Annealing with the given domain range
+[-10,10] and global minima at Zero.
