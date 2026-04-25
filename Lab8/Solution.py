@@ -196,16 +196,12 @@ def simulated_annealing(objective, bounds, n_iterations=10000, temp=1000.0, cool
     return best, best_eval
 
 best_sa, eval_sa = simulated_annealing(sphere, bounds, seed=42)
-print("\n=== Simulated Annealing ===")
+print("\n Simulated Annealing ")
 print("Best solution:", best_sa)
 print("Best value (f(x)):", eval_sa)
 
-print("\n=== Comparative Results (10D Sphere Function) ===")
+print("\n Comparative Results (10D Sphere Function) ")
 print(f"Differential Evolution : f(x) = {result_de.fun:.10f}")
 print(f"Genetic Algorithm      : f(x) = {eval_ga:.10f}")
 print(f"Simulated Annealing    : f(x) = {eval_sa:.10f}")
 
-# Summary:
-# - Differential Evolution usually converges fastest and closest to 0 on this unimodal function.
-# - Genetic Algorithm is robust but slower.
-# - Simulated Annealing can get stuck in local regions if cooling is too fast.
