@@ -1,4 +1,6 @@
-# a>
+#______________
+# a> Implement a simple CNN for the given image classification.
+#______________
 import torch
 import torch.nn as nn
 import torch.optim as optim
