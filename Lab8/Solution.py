@@ -91,8 +91,10 @@ with torch.no_grad():
         correct += (predicted == labels).sum().item()
 
 print(f'Accuracy on test images: {100 * correct / total:.2f}%')
-
-# b>
+#_____________
+# b> Write a program to optimize a function f(x) = ∑ xid 2i using Differential Evolution and make a comparative study with Genetic Algorithm and Simulated Annealing with the given domain range
+#-------------
+[-10,10] and global minima at Zero.
 import numpy as np
 from scipy.optimize import differential_evolution
 
