@@ -1,0 +1,15 @@
+Soft Computing Lab (AIMLPPC108)
+Updated Basic Assignment 6
+
+a) Implement the following optimizers on Neural Network
+ Gradient Descent
+ Batch Gradient Descent
+ Stochastic Gradient Descent
+ Mini-Batch Gradient Descent
+ Momentum
+ AdaGrad (Adaptive Gradient Algorithm)
+ RMSprop
+ Adam (Adaptive Moment Estimation)
+
+b) Develop a Multi-Layer Perceptron with Backpropagation using any one of the above mentioned
+optimizers. Use the attached data for training and testing and report loss and accuracy.
