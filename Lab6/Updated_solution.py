@@ -100,9 +100,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score
 
-# ------------------------------
 # MLP implementation (Adam)
-# ------------------------------
+
 class MLP:
     def __init__(self, layer_sizes, learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8):
         self.layer_sizes = layer_sizes
@@ -214,9 +213,7 @@ class MLP:
         pred = self.predict(X)
         return accuracy_score(y, pred)
 
-# ------------------------------
 # Load and process datasets
-# ------------------------------
 def load_dataset(filename):
     data = np.loadtxt(filename)
     X = data[:, :2]
