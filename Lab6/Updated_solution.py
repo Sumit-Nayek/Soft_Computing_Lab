@@ -1,4 +1,6 @@
+#-----------
 ## a>
+#-----------
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.datasets import make_blobs
@@ -96,7 +98,9 @@ plt.ylabel("Loss")
 plt.legend()
 plt.show()
 
-## Problem 2
+#--------
+# b>
+# -------
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
