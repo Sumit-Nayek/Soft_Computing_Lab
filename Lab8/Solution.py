@@ -6,93 +6,103 @@ import torch.nn as nn
 import torch.optim as optim
 import torchvision
 import torchvision.transforms as transforms
-import matplotlib.pyplot as plt
-import numpy as np
 from torch.utils.data import DataLoader
 
-# Device configuration
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# 1. Setup: Use GPU if available, else CPU
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
-# Data preprocessing and augmentation
+# 2. Load and preprocess MNIST dataset
+# MNIST: 28x28 grayscale images of digits 0-9
+# Convert to tensor and normalize to range [-1, 1] (mean=0.5, std=0.5)
 transform = transforms.Compose([
-    transforms.RandomHorizontalFlip(),
-    transforms.RandomCrop(32, padding=4),
-    transforms.ToTensor(),
-    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
+    transforms.ToTensor(),                     # Convert PIL image to tensor (0-1 range)
+    transforms.Normalize((0.5,), (0.5,))       # Normalize to (-1, 1) for better training
 ])
 
-# Load CIFAR-10 dataset
-trainset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=transform)
-trainloader = DataLoader(trainset, batch_size=128, shuffle=True, num_workers=2)
+# Download MNIST (first run) - very reliable, small file size
+trainset = torchvision.datasets.MNIST(root='./data', train=True, download=True, transform=transform)
+testset = torchvision.datasets.MNIST(root='./data', train=False, download=True, transform=transform)
 
-testset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transform=transform)
-testloader = DataLoader(testset, batch_size=100, shuffle=False, num_workers=2)
+batch_size = 64
+trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True)
+testloader = DataLoader(testset, batch_size=batch_size, shuffle=False)
 
-classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
-
-# Simple CNN Model
+# 3. Define a very simple CNN
 class SimpleCNN(nn.Module):
-    def __init__(self):
+    def __init__(self, num_classes=10):
         super(SimpleCNN, self).__init__()
-        self.conv1 = nn.Conv2d(3, 32, kernel_size=3, padding=1)
-        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
-        self.conv3 = nn.Conv2d(64, 128, kernel_size=3, padding=1)
-        self.pool = nn.MaxPool2d(2, 2)
-        self.dropout = nn.Dropout(0.25)
-        self.fc1 = nn.Linear(128 * 4 * 4, 512)
-        self.fc2 = nn.Linear(512, 10)
-        self.relu = nn.ReLU()
-
+        # First convolution: input 1 channel (grayscale), output 16 channels, kernel 3x3, padding 1 (keeps size)
+        self.conv1 = nn.Conv2d(1, 16, kernel_size=3, padding=1)
+        self.relu1 = nn.ReLU()
+        self.pool1 = nn.MaxPool2d(2, 2)   # reduces 28x28 -> 14x14
+        
+        # Second convolution: 16 channels -> 32 channels
+        self.conv2 = nn.Conv2d(16, 32, kernel_size=3, padding=1)
+        self.relu2 = nn.ReLU()
+        self.pool2 = nn.MaxPool2d(2, 2)   # reduces 14x14 -> 7x7
+        
+        # After two pools, feature map size = 7x7 with 32 channels = 32*7*7 = 1568 numbers
+        self.fc = nn.Linear(32 * 7 * 7, num_classes)   # final fully connected layer to 10 classes
+    
     def forward(self, x):
-        x = self.pool(self.relu(self.conv1(x)))
-        x = self.pool(self.relu(self.conv2(x)))
-        x = self.pool(self.relu(self.conv3(x)))
-        x = x.view(-1, 128 * 4 * 4)  # Flatten
-        x = self.dropout(self.relu(self.fc1(x)))
-        x = self.fc2(x)
+        # Forward pass through layers
+        x = self.pool1(self.relu1(self.conv1(x)))   # conv1 → relu → maxpool
+        x = self.pool2(self.relu2(self.conv2(x)))   # conv2 → relu → maxpool
+        x = x.view(x.size(0), -1)                  # flatten: (batch, 32*7*7)
+        x = self.fc(x)                             # linear layer to get class scores (logits)
         return x
 
-model = SimpleCNN().to(device)
+model = SimpleCNN(num_classes=10).to(device)
+print(model)   # prints the architecture
 
-# Loss and Optimizer
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+# 4. Loss function and optimizer
+criterion = nn.CrossEntropyLoss()   # combines softmax + negative log-likelihood
+optimizer = optim.Adam(model.parameters(), lr=0.001)   # Adam is a popular optimizer
 
-# Training loop
-num_epochs = 10
+# 5. Train the network
+num_epochs = 5   # small number for quick learning; can increase for better accuracy
+print("Starting training...")
 for epoch in range(num_epochs):
-    model.train()
+    model.train()          # set model to training mode (enables dropout/batchnorm if any)
     running_loss = 0.0
-    for i, (images, labels) in enumerate(trainloader):
-        images, labels = images.to(device), labels.to(device)
+    for images, labels in trainloader:
+        images, labels = images.to(device), labels.to(device)   # move data to GPU/CPU
         
-        optimizer.zero_grad()
+        # Forward pass: compute predictions
         outputs = model(images)
-        loss = criterion(outputs, labels)
-        loss.backward()
-        optimizer.step()
+        loss = criterion(outputs, labels)   # calculate loss
         
-        running_loss += loss.item()
-        if i % 100 == 99:
-            print(f'Epoch [{epoch+1}/{num_epochs}], Step [{i+1}/{len(trainloader)}], Loss: {running_loss/100:.4f}')
-            running_loss = 0.0
+        # Backward pass and optimization
+        optimizer.zero_grad()   # clear previous gradients
+        loss.backward()         # compute new gradients
+        optimizer.step()        # update weights        
+        running_loss += loss.item()   # accumulate loss    
+    avg_loss = running_loss / len(trainloader)
+    print(f"Epoch [{epoch+1}/{num_epochs}] - Training Loss: {avg_loss:.4f}")
 
-print("Training finished!")
-
-# Evaluation
-model.eval()
+# 6. Evaluate on test set
+model.eval()        # set to evaluation mode (no gradients, dropout off)
+test_loss = 0.0
 correct = 0
 total = 0
-with torch.no_grad():
+
+with torch.no_grad():   # disable gradient computation (saves memory and speed)
     for images, labels in testloader:
         images, labels = images.to(device), labels.to(device)
         outputs = model(images)
-        _, predicted = torch.max(outputs.data, 1)
+        loss = criterion(outputs, labels)
+        test_loss += loss.item() * images.size(0)   # multiply by batch size for total loss
+        
+        _, predicted = torch.max(outputs, 1)   # get the class with highest score
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
 
-print(f'Accuracy on test images: {100 * correct / total:.2f}%')
+test_loss /= total   # average loss per sample
+accuracy = 100.0 * correct / total
+
+print(f"\nTest Loss: {test_loss:.4f}")
+print(f"Test Accuracy: {accuracy:.2f}%")
 #_____________
 # b> Write a program to optimize a function f(x) = ∑ xid 2i using Differential Evolution and make a comparative study with Genetic Algorithm and Simulated Annealing with the given domain range
 #-------------
