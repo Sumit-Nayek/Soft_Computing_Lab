@@ -1,6 +1,6 @@
-# 🧠 Soft Computing Lab
+# Soft Computing Lab
 
-## 📌 What Is This Project?
+## What Is This Project?
 **Soft Computing Lab** is a learning-focused repository that explores key soft computing techniques through implemented examples, visualizations, and experiments.  
 Soft computing refers to computational approaches that are **tolerant of uncertainty, approximation, and imprecision**, and are used to solve complex problems where traditional methods struggle.
 
