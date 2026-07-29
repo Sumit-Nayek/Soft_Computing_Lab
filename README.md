@@ -1,4 +1,5 @@
-# Soft Computing Lab
+<img width="1408" height="768" alt="Gemini_Generated_Image_clei6uclei6uclei" src="https://github.com/user-attachments/assets/87f90bd7-b104-45f2-81e2-523295c5487f" />
+
 
 ## What Is This Project?
 **Soft Computing Lab** is a learning-focused repository that explores key soft computing techniques through implemented examples, visualizations, and experiments.  
