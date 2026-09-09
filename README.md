@@ -52,7 +52,7 @@ Soft computing labs often start with small neural network examples to show how w
 
 ---
 
-## 🧠 How These Work Together
+##  How These Work Together
 Soft computing brings *flexibility and adaptability* to problem-solving:
 
 | Challenge | Traditional Method | Soft Computing Advantage |
