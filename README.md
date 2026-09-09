@@ -93,7 +93,7 @@ To learn from this repo:
 
 ---
 
-## 🧠 Summary
+## Summary
 The **Soft Computing Lab** is an interactive learning resource that demonstrates:
 
 ✔ Tolerance to uncertainty & approximation  
