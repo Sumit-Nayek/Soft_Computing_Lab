@@ -22,7 +22,7 @@ Understanding these methods helps you handle problems where exact solutions are 
 
 ---
 
-## 🧠 Core Concepts Covered
+## Core Concepts Covered
 
 ### 🔹 Fuzzy Logic
 Fuzzy logic deals with *degrees of truth* rather than binary true/false. Unlike classical logic, it allows values between 0 and 1, which better matches how humans reason about uncertainty.
