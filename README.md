@@ -43,9 +43,7 @@ This allows the algorithm to explore solution spaces efficiently for tasks like 
 ---
 
 ### 🔹 Neural Networks (Basic)
-Neural networks simulate simplified versions of the human brain’s neurons to learn patterns. They can **approximate nonlinear functions**, classify data points, and adapt through training.
-
-Soft computing labs often start with small neural network examples to show how weights and activation functions produce learning behavior.
+Neural networks simulate simplified versions of the human brain’s neurons to learn patterns. They can **approximate nonlinear functions**, classify data points, and adapt through training. 
 
 ---
 
