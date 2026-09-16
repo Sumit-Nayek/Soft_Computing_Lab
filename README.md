@@ -2,12 +2,12 @@
 
 
 ## What Is This Project?
-**Soft Computing Lab** is a learning-focused repository that explores key soft computing techniques through implemented examples, visualizations, and experiments.  Soft computing refers to computational approaches that are **tolerant of uncertainty, approximation, and imprecision**, and are used to solve complex problems where traditional methods struggle. This repository acts as an educational companion to theoretical soft computing topics, showing how the algorithms work in practice with code and visuals.
+**Soft Computing Lab** is a learning focused repository that explores key soft computing techniques through implemented examples, visualizations, and experiments.  Soft computing refers to computational approaches that are **tolerant of uncertainty, approximation, and imprecision**, and are used to solve complex problems where traditional methods struggle. This repository acts as an educational companion to theoretical soft computing topics, showing how the algorithms work in practice with code and visuals.
 
 ---
 
 ## 🎯 Why This Matters
-Soft computing techniques bridge the gap between rigid mathematical models and *real-world complexity*. They are used in areas where data is noisy, incomplete, nonlinear, or ambiguous — which is extremely common in real scenarios like:
+Soft computing techniques bridge the gap between rigid mathematical models and *real-world complexity*. They are used in areas where data is noisy, incomplete, nonlinear, or ambiguous which is extremely common in real scenarios like:
 
 ✔ Pattern recognition  
 ✔ Optimization problems  
