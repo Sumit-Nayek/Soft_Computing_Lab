@@ -54,7 +54,7 @@ Soft computing brings *flexibility and adaptability* to problem-solving:
 |-----------|------------------|---------------------------|
 | Noisy or imprecise data | Struggles | Handles uncertainty |
 | Complex optimization | Slow or infeasible | GAs find good approximations |
-| Fuzzy decision making | Rigid yes/no | Human-like reasoning |
+| Fuzzy decision making | Rigid yes/no | Human like reasoning |
 | Nonlinear patterns | Hard to model | Neural networks learn patterns |
 
 The algorithms complement each other:
