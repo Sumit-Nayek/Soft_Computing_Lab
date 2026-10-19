@@ -84,7 +84,7 @@ To learn from this repo:
    - mutation rate in GAs  
    - membership functions in fuzzy logic  
    - learning rate in neural networks.  
-5. Compare results and insights — this is how soft computing *feels* in practice.
+5. Compare results and insights this is how soft computing *feels* in practice.
 
 ---
 
