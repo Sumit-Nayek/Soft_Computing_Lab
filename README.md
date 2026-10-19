@@ -48,7 +48,7 @@ Neural networks simulate simplified versions of the human brain’s neurons to l
 ---
 
 ##  How These Work Together
-Soft computing brings *flexibility and adaptability* to problem-solving:
+Soft computing brings *flexibility and adaptability* to problem solving:
 
 | Challenge | Traditional Method | Soft Computing Advantage |
 |-----------|------------------|---------------------------|
